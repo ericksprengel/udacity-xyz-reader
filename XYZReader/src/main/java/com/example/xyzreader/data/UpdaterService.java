@@ -12,6 +12,7 @@ import android.os.RemoteException;
 import android.text.format.Time;
 import android.util.Log;
 
+import com.example.xyzreader.R;
 import com.example.xyzreader.remote.RemoteEndpointUtil;
 
 import org.json.JSONArray;
@@ -28,6 +29,13 @@ public class UpdaterService extends IntentService {
     public static final String EXTRA_REFRESHING
             = "com.example.xyzreader.intent.extra.REFRESHING";
 
+
+
+    public static final String BROADCAST_ACTION_ERROR_REFRESHING
+            = "com.example.xyzreader.intent.action.ERROR_REFRESHING";
+    public static final String EXTRA_ERROR_MESSAGE
+            = "com.example.xyzreader.intent.extra.MESSAGE";
+
     public UpdaterService() {
         super(TAG);
     }
@@ -40,6 +48,9 @@ public class UpdaterService extends IntentService {
         NetworkInfo ni = cm.getActiveNetworkInfo();
         if (ni == null || !ni.isConnected()) {
             Log.w(TAG, "Not online, not refreshing.");
+            sendStickyBroadcast(
+                    new Intent(BROADCAST_ACTION_ERROR_REFRESHING).putExtra(EXTRA_ERROR_MESSAGE,
+                            getApplicationContext().getString(R.string.error_not_online)));
             return;
         }
 
@@ -78,6 +89,9 @@ public class UpdaterService extends IntentService {
 
         } catch (JSONException | RemoteException | OperationApplicationException e) {
             Log.e(TAG, "Error updating content.", e);
+            sendStickyBroadcast(
+                    new Intent(BROADCAST_ACTION_ERROR_REFRESHING).putExtra(EXTRA_ERROR_MESSAGE,
+                            getApplicationContext().getString(R.string.error_not_online)));
         }
 
         sendStickyBroadcast(

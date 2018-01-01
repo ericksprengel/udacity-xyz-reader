@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -65,6 +66,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         getLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
+            Snackbar.make(this.mRecyclerView, R.string.welcome_message, Snackbar.LENGTH_LONG).show();
             refresh();
         }
     }
@@ -78,6 +80,8 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onStart();
         registerReceiver(mRefreshingReceiver,
                 new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
+        registerReceiver(mRefreshingReceiver,
+                new IntentFilter(UpdaterService.BROADCAST_ACTION_ERROR_REFRESHING));
     }
 
     @Override
@@ -94,6 +98,9 @@ public class ArticleListActivity extends AppCompatActivity implements
             if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
                 mIsRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
                 updateRefreshingUI();
+            } else if (UpdaterService.BROADCAST_ACTION_ERROR_REFRESHING.equals(intent.getAction())) {
+                String errorMessage = intent.getStringExtra(UpdaterService.EXTRA_ERROR_MESSAGE);
+                Snackbar.make(mSwipeRefreshLayout, errorMessage, Snackbar.LENGTH_LONG).show();
             }
         }
     };
