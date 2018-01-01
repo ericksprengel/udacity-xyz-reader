@@ -27,6 +27,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
+import com.github.florent37.picassopalette.PicassoPalette;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -172,27 +174,23 @@ public class ArticleDetailFragment extends Fragment implements
 
             }
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />")));
-            ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
-                    .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
-                        @Override
-                        public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-                            Bitmap bitmap = imageContainer.getBitmap();
-                            if (bitmap != null) {
-                                Palette p = Palette.from(bitmap)
-                                        .maximumColorCount(12)
-                                        .generate();
-                                int mutedColor = p.getMutedColor(0xFF333333);
-                                mCollapsingToolbarLayout.setContentScrimColor(mutedColor);
-                                bylineView.setBackgroundColor(mutedColor);
-                                mPhotoView.setImageBitmap(imageContainer.getBitmap());
-                            }
-                        }
 
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
+            String photoUrl = mCursor.getString(ArticleLoader.Query.PHOTO_URL);
 
-                        }
-                    });
+            // Using Picasso and PicassoPalette to load image and palette in background.
+            Picasso.with(getActivity()).load(photoUrl).into(mPhotoView,
+                    PicassoPalette.with(photoUrl, mPhotoView)
+                            .use(PicassoPalette.Profile.MUTED_DARK)
+                            .intoCallBack(new PicassoPalette.CallBack() {
+                                @Override
+                                public void onPaletteLoaded(Palette palette) {
+                                    int mutedColor = palette.getMutedColor(0xFF333333);
+                                    mCollapsingToolbarLayout.setContentScrimColor(mutedColor);
+                                    bylineView.setBackgroundColor(mutedColor);
+
+                                }
+                            })
+            );
         } else {
             mRootView.setVisibility(View.GONE);
             bylineView.setText("N/A" );

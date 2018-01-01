@@ -24,6 +24,7 @@ import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,7 +38,7 @@ import java.util.GregorianCalendar;
  * activity presents a grid of items as cards.
  */
 public class ArticleListActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+            LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = ArticleListActivity.class.toString();
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -80,8 +81,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onStart();
         registerReceiver(mRefreshingReceiver,
                 new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
-        registerReceiver(mRefreshingReceiver,
-                new IntentFilter(UpdaterService.BROADCAST_ACTION_ERROR_REFRESHING));
     }
 
     @Override
@@ -97,10 +96,12 @@ public class ArticleListActivity extends AppCompatActivity implements
         public void onReceive(Context context, Intent intent) {
             if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
                 mIsRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
+
+                if(intent.hasExtra(UpdaterService.EXTRA_ERROR_MESSAGE)) {
+                    String errorMessage = intent.getStringExtra(UpdaterService.EXTRA_ERROR_MESSAGE);
+                    Snackbar.make(mSwipeRefreshLayout, errorMessage, Snackbar.LENGTH_LONG).show();
+                }
                 updateRefreshingUI();
-            } else if (UpdaterService.BROADCAST_ACTION_ERROR_REFRESHING.equals(intent.getAction())) {
-                String errorMessage = intent.getStringExtra(UpdaterService.EXTRA_ERROR_MESSAGE);
-                Snackbar.make(mSwipeRefreshLayout, errorMessage, Snackbar.LENGTH_LONG).show();
             }
         }
     };
@@ -189,9 +190,8 @@ public class ArticleListActivity extends AppCompatActivity implements
                         + "<br/>" + " by "
                         + mCursor.getString(ArticleLoader.Query.AUTHOR)));
             }
-            holder.thumbnailView.setImageUrl(
-                    mCursor.getString(ArticleLoader.Query.THUMB_URL),
-                    ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
+            String thumbUrl = mCursor.getString(ArticleLoader.Query.THUMB_URL);
+            Picasso.with(ArticleListActivity.this).load(thumbUrl).into(holder.thumbnailView);
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
         }
 

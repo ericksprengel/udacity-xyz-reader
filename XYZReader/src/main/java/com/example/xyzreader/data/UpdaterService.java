@@ -28,11 +28,6 @@ public class UpdaterService extends IntentService {
             = "com.example.xyzreader.intent.action.STATE_CHANGE";
     public static final String EXTRA_REFRESHING
             = "com.example.xyzreader.intent.extra.REFRESHING";
-
-
-
-    public static final String BROADCAST_ACTION_ERROR_REFRESHING
-            = "com.example.xyzreader.intent.action.ERROR_REFRESHING";
     public static final String EXTRA_ERROR_MESSAGE
             = "com.example.xyzreader.intent.extra.MESSAGE";
 
@@ -49,8 +44,11 @@ public class UpdaterService extends IntentService {
         if (ni == null || !ni.isConnected()) {
             Log.w(TAG, "Not online, not refreshing.");
             sendStickyBroadcast(
-                    new Intent(BROADCAST_ACTION_ERROR_REFRESHING).putExtra(EXTRA_ERROR_MESSAGE,
-                            getApplicationContext().getString(R.string.error_not_online)));
+                    new Intent(BROADCAST_ACTION_STATE_CHANGE)
+                            .putExtra(EXTRA_REFRESHING,
+                                    false)
+                            .putExtra(EXTRA_ERROR_MESSAGE,
+                                    getApplicationContext().getString(R.string.error_not_online)));
             return;
         }
 
@@ -90,8 +88,12 @@ public class UpdaterService extends IntentService {
         } catch (JSONException | RemoteException | OperationApplicationException e) {
             Log.e(TAG, "Error updating content.", e);
             sendStickyBroadcast(
-                    new Intent(BROADCAST_ACTION_ERROR_REFRESHING).putExtra(EXTRA_ERROR_MESSAGE,
-                            getApplicationContext().getString(R.string.error_not_online)));
+                    new Intent(BROADCAST_ACTION_STATE_CHANGE)
+                            .putExtra(EXTRA_REFRESHING,
+                                    false)
+                            .putExtra(EXTRA_ERROR_MESSAGE,
+                                    getApplicationContext().getString(R.string.error_not_online)));
+            return;
         }
 
         sendStickyBroadcast(
