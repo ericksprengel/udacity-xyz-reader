@@ -5,7 +5,6 @@ import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -23,8 +22,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.github.florent37.picassopalette.PicassoPalette;
@@ -187,7 +184,6 @@ public class ArticleDetailFragment extends Fragment implements
                                     int mutedColor = palette.getMutedColor(0xFF333333);
                                     mCollapsingToolbarLayout.setContentScrimColor(mutedColor);
                                     bylineView.setBackgroundColor(mutedColor);
-
                                 }
                             })
             );

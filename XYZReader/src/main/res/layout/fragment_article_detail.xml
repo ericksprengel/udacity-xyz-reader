@@ -65,7 +65,8 @@
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:background="@color/colorPrimary"
-            android:textColor="@color/colorPrimaryLight" />
+            tools:text="Jan 12, 2013 by Ernest Hemingway"
+            android:textColor="#99FFFFFF" />
 
         <TextView
             android:id="@+id/article_body"

@@ -17,13 +17,12 @@
 
 <resources>
     <!-- I used this tool to generate this palette: materialpalette.com/brown/deep-orange -->
-    <color name="colorPrimary">#795548</color>
-    <color name="colorPrimaryDark">#5D4037</color>
-    <color name="colorPrimaryLight">#D7CCC8</color>
-    <color name="colorAccent">#FF5722</color>
+    <color name="colorPrimary">#4e342e</color>
+    <color name="colorPrimaryDark">#260E04</color>
+    <color name="colorPrimaryLight">#7B5E57</color>
+    <color name="colorAccent">#FFAB40</color>
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecondaryText">#757575</color>
     <color name="colorIcons">#FFFFFF</color>
     <color name="colorDivider">#BDBDBD</color>
-
 </resources>
